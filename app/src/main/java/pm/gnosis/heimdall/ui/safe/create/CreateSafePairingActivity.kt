@@ -6,14 +6,14 @@ import pm.gnosis.heimdall.R
 import pm.gnosis.heimdall.ui.safe.pairing.PairingActivity
 import pm.gnosis.model.Solidity
 
-class CreationPairingActivity: PairingActivity() {
+class CreateSafePairingActivity : PairingActivity() {
     override fun titleRes(): Int = R.string.connect
 
     override fun onSuccess(extension: Solidity.Address) {
-        startActivity(SafeRecoveryPhraseActivity.createIntent(this, extension))
+        startActivity(CreateSafeSetupRecoveryPhraseActivity.createIntent(this, extension))
     }
 
     companion object {
-        fun createIntent(context: Context) = Intent(context, CreationPairingActivity::class.java)
+        fun createIntent(context: Context) = Intent(context, CreateSafePairingActivity::class.java)
     }
 }

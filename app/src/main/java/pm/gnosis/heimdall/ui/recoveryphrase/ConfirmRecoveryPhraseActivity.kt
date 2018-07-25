@@ -1,10 +1,7 @@
-package pm.gnosis.heimdall.ui.safe.create
+package pm.gnosis.heimdall.ui.recoveryphrase
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
-import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.jakewharton.rxbinding2.view.clicks
@@ -14,22 +11,16 @@ import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.layout_confirm_safe_recovery_phrase.*
 import pm.gnosis.heimdall.R
-import pm.gnosis.heimdall.di.components.ViewComponent
 import pm.gnosis.heimdall.helpers.ToolbarHelper
 import pm.gnosis.heimdall.reporting.ScreenId
 import pm.gnosis.heimdall.ui.base.ViewModelActivity
-import pm.gnosis.heimdall.ui.safe.main.SafeMainActivity
-import pm.gnosis.model.Solidity
 import pm.gnosis.svalinn.common.utils.getColorCompat
 import pm.gnosis.svalinn.common.utils.subscribeForResult
-import pm.gnosis.svalinn.common.utils.toast
-import pm.gnosis.utils.asEthereumAddress
-import pm.gnosis.utils.asEthereumAddressString
 import timber.log.Timber
 import javax.inject.Inject
 
 
-class ConfirmSafeRecoveryPhraseActivity : ViewModelActivity<ConfirmSafeRecoveryPhraseContract>() {
+abstract class ConfirmRecoveryPhraseActivity<VM : ConfirmRecoveryPhraseContract> : ViewModelActivity<VM>() {
     override fun screenId() = ScreenId.CONFIRM_RECOVERY_PHRASE
 
     // TODO Span count
@@ -42,41 +33,29 @@ class ConfirmSafeRecoveryPhraseActivity : ViewModelActivity<ConfirmSafeRecoveryP
     lateinit var toolbarHelper: ToolbarHelper
 
     @Inject
-    lateinit var adapter: ConfirmSafeRecoveryPhraseAdapter
+    lateinit var adapter: ConfirmRecoveryPhraseAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val encryptedMnemonic = intent.getStringExtra(EXTRA_ENCRYPTED_MNEMONIC)
-        val chromeExtensionAddress = intent.getStringExtra(EXTRA_CHROME_EXTENSION_ADDRESS).asEthereumAddress()
-        if (encryptedMnemonic == null || chromeExtensionAddress == null) {
+        if (encryptedMnemonic == null) {
             finish(); return
         }
 
-        disposables += viewModel.setup(encryptedMnemonic, chromeExtensionAddress)
+        disposables += viewModel.setup(encryptedMnemonic)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(onSuccess = ::onSuccessfulSetup, onError = { finish() })
 
         layout_confirm_safe_recovery_phrase_selected_words.apply {
             setHasFixedSize(true)
-            layoutManager = this@ConfirmSafeRecoveryPhraseActivity.layoutManager
-            adapter = this@ConfirmSafeRecoveryPhraseActivity.adapter
+            layoutManager = this@ConfirmRecoveryPhraseActivity.layoutManager
+            adapter = this@ConfirmRecoveryPhraseActivity.adapter
         }
     }
 
     override fun onStart() {
         super.onStart()
-        disposables += layout_confirm_safe_recovery_phrase_finish.clicks()
-            .flatMapSingle {
-                viewModel.createSafe()
-                    .doOnSubscribe {
-                        layout_confirm_safe_recovery_phrase_progress_bar.visibility = View.VISIBLE
-                        bottomBarEnabled(false)
-                    }
-            }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeForResult(onNext = ::onSafeCreated, onError = ::onSafeCreationError)
-
         disposables += layout_confirm_safe_recovery_phrase_back.clicks()
             .subscribeBy(onNext = { finish() }, onError = Timber::e)
 
@@ -95,20 +74,9 @@ class ConfirmSafeRecoveryPhraseActivity : ViewModelActivity<ConfirmSafeRecoveryP
         bottomBarEnabled(false)
     }
 
-    private fun bottomBarEnabled(enable: Boolean) {
+    protected fun bottomBarEnabled(enable: Boolean) {
         layout_confirm_safe_recovery_phrase_finish.isEnabled = enable
         layout_confirm_safe_recovery_phrase_bottom_bar.setBackgroundColor(getColorCompat(if (enable) R.color.azure else R.color.bluey_grey))
-    }
-
-    private fun onSafeCreated(address: Solidity.Address) {
-        startActivity(SafeMainActivity.createIntent(this, address))
-    }
-
-    private fun onSafeCreationError(throwable: Throwable) {
-        Timber.e(throwable)
-        layout_confirm_safe_recovery_phrase_progress_bar.visibility = View.INVISIBLE
-        bottomBarEnabled(true)
-        toast(R.string.unknown_error)
     }
 
     private fun onSuccessfulSetup(words: List<String>) {
@@ -141,21 +109,12 @@ class ConfirmSafeRecoveryPhraseActivity : ViewModelActivity<ConfirmSafeRecoveryP
 
     override fun layout() = R.layout.layout_confirm_safe_recovery_phrase
 
-    override fun inject(component: ViewComponent) = component.inject(this)
-
     override fun onDestroy() {
         super.onDestroy()
         wordClickDisposables.clear()
     }
 
     companion object {
-        private const val EXTRA_ENCRYPTED_MNEMONIC = "extra.string.encrypted_mnemonic"
-        private const val EXTRA_CHROME_EXTENSION_ADDRESS = "extra.string.chrome_extension_address"
-
-        fun createIntent(context: Context, encryptedMnemonic: String, chromeExtensionAddress: Solidity.Address) =
-            Intent(context, ConfirmSafeRecoveryPhraseActivity::class.java).apply {
-                putExtra(EXTRA_ENCRYPTED_MNEMONIC, encryptedMnemonic)
-                putExtra(EXTRA_CHROME_EXTENSION_ADDRESS, chromeExtensionAddress.asEthereumAddressString())
-            }
+        const val EXTRA_ENCRYPTED_MNEMONIC = "extra.string.encrypted_mnemonic"
     }
 }

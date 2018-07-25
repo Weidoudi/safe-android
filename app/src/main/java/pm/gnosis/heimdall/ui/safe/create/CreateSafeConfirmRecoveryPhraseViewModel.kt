@@ -19,44 +19,24 @@ import pm.gnosis.svalinn.common.utils.mapToResult
 import pm.gnosis.svalinn.security.EncryptionManager
 import pm.gnosis.svalinn.utils.ethereum.getDeployAddressFromNonce
 import pm.gnosis.utils.asBigInteger
-import pm.gnosis.utils.utf8String
-import pm.gnosis.utils.words
 import java.math.BigInteger
 import java.security.SecureRandom
 import javax.inject.Inject
 
-class ConfirmSafeRecoveryPhraseViewModel @Inject constructor(
+class CreateSafeConfirmRecoveryPhraseViewModel @Inject constructor(
     private val accountsRepository: AccountsRepository,
     private val bip39: Bip39,
-    private val encryptionManager: EncryptionManager,
+    encryptionManager: EncryptionManager,
     private val relayServiceApi: RelayServiceApi,
     private val gnosisSafeRepository: GnosisSafeRepository
-) : ConfirmSafeRecoveryPhraseContract() {
-    private lateinit var mnemonic: String
+) : CreateSafeConfirmRecoveryPhraseContract(encryptionManager) {
 
-    private lateinit var chromeExtensionAddress: Solidity.Address
-
+    private lateinit var browserExtensionAddress: Solidity.Address
     private val secureRandom = SecureRandom()
 
-    override fun setup(encryptedMnemonic: String, chromeExtensionAddress: Solidity.Address): Single<List<String>> =
-        Completable.fromAction {
-            val mnemonic = encryptionManager.decrypt(EncryptionManager.CryptoData.fromString(encryptedMnemonic)).utf8String()
-            if (mnemonic.words().size != 12) throw IllegalStateException("Invalid mnemonic")
-            this.mnemonic = mnemonic
-            this.chromeExtensionAddress = chromeExtensionAddress
-        }
-            .andThen(loadWordsToDisplay())
-            .subscribeOn(Schedulers.io())
-
-    private fun loadWordsToDisplay(): Single<List<String>> =
-        Single.fromCallable {
-            mnemonic.words().sorted()
-        }.subscribeOn(Schedulers.computation())
-
-    override fun isCorrectSequence(words: List<String>): Single<Result<Boolean>> =
-        Single.fromCallable {
-            words.joinToString(" ") == mnemonic
-        }.subscribeOn(Schedulers.computation()).mapToResult()
+    override fun setup(browserExtensionAddress: Solidity.Address) {
+        this.browserExtensionAddress = browserExtensionAddress
+    }
 
     override fun createSafe(): Single<Result<Solidity.Address>> =
         loadSafeOwners()
@@ -108,14 +88,14 @@ class ConfirmSafeRecoveryPhraseViewModel @Inject constructor(
     private fun loadSafeOwners() =
         accountsRepository.loadActiveAccount().map { it.address }
             .flatMap { deviceAddress ->
-                val mnemonicSeed = bip39.mnemonicToSeed(mnemonic)
+                val mnemonicSeed = bip39.mnemonicToSeed(getMnemonic())
                 Single.zip(
                     accountsRepository.accountFromMnemonicSeed(mnemonicSeed, 0).map { it.first },
                     accountsRepository.accountFromMnemonicSeed(mnemonicSeed, 1).map { it.first },
                     BiFunction<Solidity.Address, Solidity.Address, List<Solidity.Address>> { recoveryAccount1, recoveryAccount2 ->
                         listOf(
                             deviceAddress,
-                            chromeExtensionAddress,
+                            browserExtensionAddress,
                             recoveryAccount1,
                             recoveryAccount2
                         )

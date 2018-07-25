@@ -1,23 +1,17 @@
-package pm.gnosis.heimdall.ui.safe.create
+package pm.gnosis.heimdall.ui.recoveryphrase
 
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import pm.gnosis.heimdall.R
 import pm.gnosis.mnemonic.Bip39
-import pm.gnosis.model.Solidity
 import pm.gnosis.svalinn.security.EncryptionManager
 import javax.inject.Inject
 
-class SafeRecoveryPhraseViewModel @Inject constructor(
+class SetupRecoveryPhraseViewModel @Inject constructor(
     private val bip39: Bip39,
     private val encryptionManager: EncryptionManager
-) : SafeRecoveryPhraseContract() {
+) : SetupRecoveryPhraseContract() {
     private var mnemonic: String? = null
-    private lateinit var chromeExtensionAddress: Solidity.Address
-
-    override fun setup(chromeExtensionAddress: Solidity.Address) {
-        this.chromeExtensionAddress = chromeExtensionAddress
-    }
 
     override fun generateRecoveryPhrase(): Single<String> =
         Single.fromCallable { bip39.generateMnemonic(languageId = R.id.english) }
@@ -28,6 +22,4 @@ class SafeRecoveryPhraseViewModel @Inject constructor(
         if (mnemonic == null) throw IllegalStateException("Recovery phrase is null")
         encryptionManager.encrypt(mnemonic!!.toByteArray()).toString()
     }.subscribeOn(Schedulers.io())
-
-    override fun getChromeExtensionAddress() = chromeExtensionAddress
 }

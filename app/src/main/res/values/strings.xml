@@ -225,4 +225,10 @@
     <string name="no_recovery_necessary">There were no configuration changes to this safe. No recovery is necessary</string>
     <string name="replace_browser_extension_transaction_info">The existing browser extension connection will be replaced with the new browser extension.</string>
     <string name="error_retrieving_safe_balance">Error retrieving safe balance</string>
+    <string name="settings_change">Settings change</string>
+    <string name="replace_recovery_phrase">Replace recovery phrase</string>
+    <string name="scan_your_browser_extension">Scan your browser extension</string>
+    <string name="scan_browser_extension_address">Scan Browser Extension Address</string>
+    <string name="replace_recovery_phrase_description">In order to replace the recovery phrase for this safe you need to scan the address of the browser extension.</string>
+    <string name="browser_extension_not_owner">Browser extension is not an owner of this safe</string>
 </resources>

@@ -38,6 +38,7 @@ import pm.gnosis.heimdall.ui.safe.pending.DeploySafeProgressFragment
 import pm.gnosis.heimdall.ui.safe.pending.SafeCreationFundFragment
 import pm.gnosis.heimdall.ui.safe.recover.address.CheckSafeActivity
 import pm.gnosis.heimdall.ui.safe.recover.extension.ReplaceBrowserExtensionPairingActivity
+import pm.gnosis.heimdall.ui.safe.recover.recoveryphrase.ScanExtensionAddressActivity
 import pm.gnosis.heimdall.ui.safe.recover.submit.RecoveringSafeFragment
 import pm.gnosis.heimdall.ui.settings.general.GeneralSettingsActivity
 import pm.gnosis.heimdall.ui.tokens.manage.ManageTokensActivity
@@ -347,6 +348,9 @@ class SafeMainActivity : ViewModelActivity<SafeMainContract>() {
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribeBy(onComplete = { toast(R.string.sync_successful) },
                                 onError = { toast(R.string.error_syncing) })
+                    }
+                    R.id.safe_details_menu_replace_recovery_phrase -> {
+                        startActivity(ScanExtensionAddressActivity.createIntent(this, address))
                     }
                     R.id.safe_details_menu_replace_browser_extension -> {
                         startActivity(ReplaceBrowserExtensionPairingActivity.createIntent(this, address))

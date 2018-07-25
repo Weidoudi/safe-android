@@ -39,6 +39,8 @@ private typealias SigningAccounts = Pair<Pair<Solidity.Address, ByteArray>, Pair
 interface RecoverSafeOwnersHelper {
     fun process(input: InputRecoveryPhraseContract.Input, safeAddress: Solidity.Address, extensionAddress: Solidity.Address):
             Observable<InputRecoveryPhraseContract.ViewUpdate>
+
+    fun buildRecoverTransaction(safeInfo: SafeInfo, addressesToKeep: List<Solidity.Address>, addressesToAdd: List<Solidity.Address>): SafeTransaction
 }
 
 @Singleton
@@ -163,7 +165,43 @@ class DefaultRecoverSafeOwnersHelper @Inject constructor(
             payload
         }
 
-        return when (payloads.size) {
+        return buildTransaction(safeInfo, payloads)
+    }
+
+    override fun buildRecoverTransaction(
+        safeInfo: SafeInfo,
+        addressesToKeep: List<Solidity.Address>,
+        addressesToAdd: List<Solidity.Address>
+    ): SafeTransaction =
+        buildTransaction(safeInfo, buildPayloads(safeInfo, addressesToKeep, addressesToAdd))
+
+    private fun buildPayloads(
+        safeInfo: SafeInfo,
+        addressesToKeep: List<Solidity.Address>,
+        addressesToAdd: List<Solidity.Address>
+    ): List<String> {
+        val payloads = mutableListOf<String>()
+        val remainingNewAddresses = addressesToAdd.toMutableList()
+        for (i in safeInfo.owners.size - 1 downTo 0) {
+            val safeOwner = safeInfo.owners[i]
+            if (remainingNewAddresses.isEmpty()) break
+            if (!addressesToKeep.contains(safeOwner)) {
+                val newOwner = remainingNewAddresses.removeAt(remainingNewAddresses.size - 1)
+                if (safeInfo.owners.contains(newOwner)) continue
+                val pointerAddress = nullOnThrow { safeInfo.owners[i - 1] } ?: SENTINEL
+                payloads += GnosisSafePersonalEdition.SwapOwner.encode(
+                    prevOwner = pointerAddress,
+                    oldOwner = safeOwner,
+                    newOwner = newOwner
+                )
+            }
+        }
+        if (remainingNewAddresses.isNotEmpty()) throw IllegalStateException("Couldn't add all addresses")
+        return payloads
+    }
+
+    private fun buildTransaction(safeInfo: SafeInfo, payloads: List<String>) =
+        when (payloads.size) {
             1 -> SafeTransaction(
                 Transaction(safeInfo.address, data = payloads.first()),
                 TransactionExecutionRepository.Operation.CALL
@@ -186,7 +224,6 @@ class DefaultRecoverSafeOwnersHelper @Inject constructor(
                     ), TransactionExecutionRepository.Operation.DELEGATE_CALL
                 )
         }
-    }
 
     private fun prepareTransaction(safeInfo: SafeInfo, transaction: SafeTransaction, signingAccounts: SigningAccounts) =
         executionRepository.loadExecuteInformation(safeInfo.address, transaction)

@@ -20,6 +20,7 @@ import pm.gnosis.heimdall.data.remote.models.RelaySafeCreationParams
 import pm.gnosis.heimdall.data.remote.models.RelaySafeCreationTx
 import pm.gnosis.heimdall.data.remote.models.push.ServiceSignature
 import pm.gnosis.heimdall.data.repositories.GnosisSafeRepository
+import pm.gnosis.heimdall.ui.recoveryphrase.ConfirmRecoveryPhraseViewModel
 import pm.gnosis.mnemonic.Bip39
 import pm.gnosis.model.Solidity
 import pm.gnosis.models.Transaction
@@ -40,7 +41,7 @@ import pm.gnosis.utils.words
 import java.math.BigInteger
 
 @RunWith(MockitoJUnitRunner::class)
-class ConfirmSafeRecoveryPhraseViewModelTest {
+class ConfirmRecoveryPhraseViewModelTest {
     @JvmField
     @Rule
     val rule = ImmediateSchedulersRule()
@@ -63,11 +64,11 @@ class ConfirmSafeRecoveryPhraseViewModelTest {
     @Captor
     private lateinit var cryptoDataCaptor: ArgumentCaptor<EncryptionManager.CryptoData>
 
-    private lateinit var viewModel: ConfirmSafeRecoveryPhraseViewModel
+    private lateinit var viewModel: ConfirmRecoveryPhraseViewModel
 
     @Before
     fun setup() {
-        viewModel = ConfirmSafeRecoveryPhraseViewModel(
+        viewModel = ConfirmRecoveryPhraseViewModel(
             accountsRepositoryMock,
             bip39Mock,
             encryptionManagerMock,

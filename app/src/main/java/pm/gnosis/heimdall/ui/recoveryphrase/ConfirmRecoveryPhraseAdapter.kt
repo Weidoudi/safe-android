@@ -1,4 +1,4 @@
-package pm.gnosis.heimdall.ui.safe.create
+package pm.gnosis.heimdall.ui.recoveryphrase
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 
 @ForView
-class ConfirmSafeRecoveryPhraseAdapter @Inject constructor() : RecyclerView.Adapter<ConfirmSafeRecoveryPhraseAdapter.ViewHolder>() {
+class ConfirmRecoveryPhraseAdapter @Inject constructor() : RecyclerView.Adapter<ConfirmRecoveryPhraseAdapter.ViewHolder>() {
     private val items = mutableListOf<String>()
 
     private val dataChanged = PublishSubject.create<List<String>>()

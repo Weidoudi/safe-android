@@ -12,6 +12,7 @@ import org.mockito.BDDMockito.then
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 import pm.gnosis.heimdall.R
+import pm.gnosis.heimdall.ui.recoveryphrase.SetupRecoveryPhraseViewModel
 import pm.gnosis.mnemonic.Bip39
 import pm.gnosis.model.Solidity
 import pm.gnosis.svalinn.security.EncryptionManager
@@ -19,7 +20,7 @@ import pm.gnosis.tests.utils.ImmediateSchedulersRule
 import pm.gnosis.tests.utils.MockUtils
 
 @RunWith(MockitoJUnitRunner::class)
-class SafeRecoveryPhraseViewModelTest {
+class SetupRecoveryPhraseViewModelTest {
     @JvmField
     @Rule
     val rule = ImmediateSchedulersRule()
@@ -30,11 +31,11 @@ class SafeRecoveryPhraseViewModelTest {
     @Mock
     private lateinit var encryptionManagerMock: EncryptionManager
 
-    private lateinit var viewModel: SafeRecoveryPhraseViewModel
+    private lateinit var viewModel: SetupRecoveryPhraseViewModel
 
     @Before
     fun setup() {
-        viewModel = SafeRecoveryPhraseViewModel(bip39Mock, encryptionManagerMock)
+        viewModel = SetupRecoveryPhraseViewModel(bip39Mock, encryptionManagerMock)
     }
 
     @Test
