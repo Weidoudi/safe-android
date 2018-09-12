@@ -217,6 +217,31 @@
             android:screenOrientation="portrait"
             android:theme="@style/WhiteTheme" />
 
+        <activity
+            android:name=".ui.recoveryphrase.V2SetupRecoveryPhraseActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/WhiteTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.recoveryphrase.V2ConfirmRecoveryPhraseActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/WhiteTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.recoveryphrase.RecoveryPhraseIntroActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/WhiteTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+
         <service android:name=".services.HeimdallFirebaseService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

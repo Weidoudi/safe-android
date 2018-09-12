@@ -34,6 +34,7 @@ abstract class SetupRecoveryPhraseActivity<VM : SetupRecoveryPhraseContract> : V
     override fun onStart() {
         super.onStart()
         disposables += toolbarHelper.setupShadow(layout_safe_recovery_phrase_toolbar_shadow, layout_safe_recovery_phrase_content_scroll)
+
         disposables += layout_safe_recovery_phrase_finish.clicks()
             .flatMapSingle { _ ->
                 viewModel.loadEncryptedRecoveryPhrase()

@@ -8,4 +8,7 @@ abstract class ConfirmRecoveryPhraseContract : ViewModel() {
     abstract fun setup(encryptedMnemonic: String): Single<List<String>>
     abstract fun isCorrectSequence(words: List<String>): Single<Result<Boolean>>
     abstract fun getMnemonic(): String
+
+    abstract fun setRecoveryPhrase(recoveryPhrase: String)
+    abstract fun getIncorrectPositions(words: List<String>): Single<Result<Set<Int>>>
 }

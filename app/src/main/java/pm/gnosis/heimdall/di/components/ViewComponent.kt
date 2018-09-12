@@ -14,6 +14,9 @@ import pm.gnosis.heimdall.ui.onboarding.fingerprint.FingerprintSetupActivity
 import pm.gnosis.heimdall.ui.onboarding.password.PasswordConfirmActivity
 import pm.gnosis.heimdall.ui.onboarding.password.PasswordSetupActivity
 import pm.gnosis.heimdall.ui.qrscan.QRCodeScanActivity
+import pm.gnosis.heimdall.ui.recoveryphrase.RecoveryPhraseIntroActivity
+import pm.gnosis.heimdall.ui.recoveryphrase.V2ConfirmRecoveryPhraseActivity
+import pm.gnosis.heimdall.ui.recoveryphrase.V2SetupRecoveryPhraseActivity
 import pm.gnosis.heimdall.ui.safe.create.CreateSafeConfirmRecoveryPhraseActivity
 import pm.gnosis.heimdall.ui.safe.create.CreateSafeIntroActivity
 import pm.gnosis.heimdall.ui.safe.create.CreateSafeSetupRecoveryPhraseActivity
@@ -28,8 +31,8 @@ import pm.gnosis.heimdall.ui.safe.recover.ReplaceBrowserExtensionActivity
 import pm.gnosis.heimdall.ui.safe.recover.address.CheckSafeActivity
 import pm.gnosis.heimdall.ui.safe.recover.phrase.RecoverInputRecoveryPhraseActivity
 import pm.gnosis.heimdall.ui.safe.recover.phrase.ReplaceBrowserExtensionRecoveryPhraseActivity
-import pm.gnosis.heimdall.ui.safe.recover.recoveryphrase.ScanExtensionAddressActivity
 import pm.gnosis.heimdall.ui.safe.recover.recoveryphrase.ConfirmNewRecoveryPhraseActivity
+import pm.gnosis.heimdall.ui.safe.recover.recoveryphrase.ScanExtensionAddressActivity
 import pm.gnosis.heimdall.ui.safe.recover.recoveryphrase.SetupNewRecoveryPhraseActivity
 import pm.gnosis.heimdall.ui.safe.recover.submit.RecoveringSafeFragment
 import pm.gnosis.heimdall.ui.safe.recover.submit.RecoveringSafeFundFragment
@@ -95,6 +98,7 @@ interface ViewComponent {
     fun inject(activity: ConfirmNewRecoveryPhraseActivity)
     fun inject(activity: ReceiveTokenActivity)
     fun inject(activity: RecoverInputRecoveryPhraseActivity)
+    fun inject(activity: RecoveryPhraseIntroActivity)
     fun inject(activity: ReplaceBrowserExtensionActivity)
     fun inject(activity: ReplaceBrowserExtensionRecoveryPhraseActivity)
     fun inject(activity: ReviewTransactionActivity)
@@ -105,6 +109,8 @@ interface ViewComponent {
     fun inject(activity: SplashActivity)
     fun inject(activity: TransactionStatusActivity)
     fun inject(activity: UnlockActivity)
+    fun inject(activity: V2SetupRecoveryPhraseActivity)
+    fun inject(activity: V2ConfirmRecoveryPhraseActivity)
 
     // Dialogs
 

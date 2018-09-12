@@ -34,4 +34,22 @@ abstract class ConfirmRecoveryPhraseViewModel(
         }.subscribeOn(Schedulers.computation()).mapToResult()
 
     override fun getMnemonic() = mnemonic
+
+    override fun setRecoveryPhrase(recoveryPhrase: String) {
+        this.mnemonic = recoveryPhrase
+    }
+
+    override fun getIncorrectPositions(words: List<String>): Single<Result<Set<Int>>> =
+        Single.fromCallable {
+            val recoveryWords = mnemonic.words()
+
+            require(words.size == recoveryWords.size)
+
+            words.asSequence().mapIndexedNotNull { index, word ->
+                if (word != recoveryWords[index]) index
+                else null
+            }.toSet()
+        }
+            .subscribeOn(Schedulers.computation())
+            .mapToResult()
 }
