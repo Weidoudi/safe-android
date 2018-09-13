@@ -9,7 +9,7 @@ import io.reactivex.functions.Function3
 import io.reactivex.schedulers.Schedulers
 import pm.gnosis.ethereum.*
 import pm.gnosis.heimdall.BuildConfig
-import pm.gnosis.heimdall.GnosisSafePersonalEdition.*
+import pm.gnosis.heimdall.GnosisSafe.*
 import pm.gnosis.heimdall.Proxy
 import pm.gnosis.heimdall.data.db.ApplicationDb
 import pm.gnosis.heimdall.data.db.models.*
